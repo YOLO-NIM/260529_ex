@@ -84,7 +84,8 @@
           <!-- 프런트엔드/브라우저/화면에서의 검증은 모두 회피/조작-->
           <textarea name="memo" required></textarea>
           <button>작성</button>
-          <button id="resetBtn">리셋</button>
+          <!-- 폼 자체의 기능(submit)을 안쓰고 자체 click으로 기능을 하겠다 -->
+          <button id="resetBtn" type="button">리셋</button>
         </form>
         <section id="memoList" class="center">
           <!-- 작성된 메모를 배치할 예정 -->
@@ -96,6 +97,7 @@
       // DOM 요소
       const memoWriter = document.querySelector("#memoWriter");
       const memoList = document.querySelector("#memoList");
+      const resetBtn = document.querySelector("#resetBtn");
 
       // 진입점(entrypoint)
       function main() {
@@ -106,6 +108,7 @@
           // 현재 출처에 있는 모든 localStorage 데이터가 x
 
           localStorage.removeItem("memo");
+          drawPrevMemo(); // 재렌더링.
         });
         //화면에 표시하면?
         drawPrevMemo();
@@ -128,14 +131,14 @@
         // 추가할 텍스트와, 그 텍스트가 들어갈 DOM 요소
         // 내가 호출되었을 때의 스코프가 아니라 선언되었을 때의 스코프를 기억한다 -> 렉시컬 스코프
         // memoList는 기억하는데 memoText는 기억 X
-        drawMemoBox(memoText, id); // 삭데 때 쓰기 위해 id 전달
+        drawMemoBox(memoText, id); // 삭제 때 쓰기 위해 id 전달
 
         // const memoBox = document.createElement("div");
         // // memoBox.classList.add
         // memoBox.textContent = memoText;
         // memoList.append(memoBox);
 
-        // 폼 리셋 (남은 폼의 인풋 내역을 지워줌)
+        // 폼 리셋 (남은 폼의 인풋 입력 내역을 지워줌)
         event.target.reset();
       }
 
@@ -154,9 +157,11 @@
           // localStorage 지우는게 필요
           const memoObj = getPrevMemo();
           // delete memoObj[id]
+          console.log("memoId", id);
           memoObj[id] = undefined; // JSON.stringfy 시에 undefined는 삭제됨
           localStorage.setItem("memo", JSON.stringify(memoObj));
-          memoBox.remove(); // DOM만 지운 것
+          // DOM만 지운 것
+          memoBox.remove();
         });
 
         // 복사 로직
@@ -200,7 +205,9 @@
         return timeKey;
       }
 
+      // 로직 분리
       function getPrevMemo() {
+        // const prevMemo = localStorage.getItem("memo") ?? {};
         const prevMemo = localStorage.getItem("memo") ?? "{}";
         console.log(prevMemo);
         let memoObj;
@@ -227,6 +234,8 @@
         // timeKey : 메모값 -> 배열
         console.log(prevMemo);
         // 각각 메모 박스 그리기
+        // 기존에 만약에 memoList에 dom 요소가 있으면 그냥 둠
+        memoList.innerHTML = ""; // 다시 렌더링 시에는 한 번 비우게
         for (const key in prevMemo) {
           drawMemoBox(prevMemo[key], key);
         }
