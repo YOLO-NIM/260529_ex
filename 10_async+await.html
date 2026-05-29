@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- await를 async 안에만 써야한다는 제약 X -->
+    <!-- 방법 1 -->
+    <script type="module">
+      // 방법2
+      document.addEventListener("DOMContentLoaded", async function () {});
+      // new Promise((resolve, reject) => {...})
+      async function myFun1() {}
+      const myFun2 = async function () {};
+      setTimeout(() => console.log("매크로태스크 큐"));
+      const r1 = myFun1();
+      const r2 = await myFun2().then(() => "r2 (콜스택)");
+      r1.then(() => console.log("r1 처리 완료(마이크로태스크 큐)"));
+      console.log("콜 스택");
+      console.log(r2);
+      console.log(r1);
+      console.log(r2);
+    </script>
+  </body>
+</html>
